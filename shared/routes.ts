@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertExampleSchema, examples, generateBioSchema, checkBioSchema, checkBioResponseSchema } from './schema';
+import { insertExampleSchema, examples, generateBioSchema, checkBioSchema, checkBioResponseSchema } from './schema.js';
 
 export const errorSchemas = {
   validation: z.object({

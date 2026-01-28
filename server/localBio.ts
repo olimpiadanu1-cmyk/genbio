@@ -1,4 +1,4 @@
-import { generateBioSchema } from "@shared/schema";
+import { generateBioSchema } from "../shared/schema.js";
 import { z } from "zod";
 
 type GenerateBioParams = z.infer<typeof generateBioSchema>;
