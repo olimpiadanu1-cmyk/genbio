@@ -120,25 +120,34 @@ export async function registerRoutes(
     }
   });
 
-  // Seed data logic
-  const existing = await storage.getExamples();
-  const hasOldExample = existing.some(e =>
-    e.title === "Иван Иванов - Пример" ||
-    e.title === "Иван Иванов - Обычный рабочий"
-  );
+  // Seed data logic - DISABLED on Vercel to prevent timeouts and crashes
+  if (process.env.VERCEL) {
+    console.log("[SEED] Running on Vercel, skipping automatic database sync");
+    return httpServer;
+  }
 
-  const needsCityUpdate = existing.length > 0 && !existing.some(e => e.content.includes("Екатеринбург"));
-  const needsDateUpdate = existing.length > 0 && !existing.some(e => e.content.includes(".2026"));
+  try {
+    const existing = await storage.getExamples();
+    const hasOldExample = existing.some(e =>
+      e.title === "Иван Иванов - Пример" ||
+      e.title === "Иван Иванов - Обычный рабочий"
+    );
 
-  if (existing.length < 50 || hasOldExample || needsCityUpdate || needsDateUpdate) {
-    console.log(`[SEED] Syncing database. Current: ${existing.length}, Needs City Update: ${needsCityUpdate}, Needs Date Update: ${needsDateUpdate}`);
-    await storage.clearExamples();
-    console.log("[SEED] Storage cleared. Injecting 50 examples with new cities...");
+    const needsCityUpdate = existing.length > 0 && !existing.some(e => e.content.includes("Екатеринбург"));
+    const needsDateUpdate = existing.length > 0 && !existing.some(e => e.content.includes(".2026"));
 
-    for (const example of massiveSeeds) {
-      await storage.createExample(example);
+    if (existing.length < 50 || hasOldExample || needsCityUpdate || needsDateUpdate) {
+      console.log(`[SEED] Syncing database. Current: ${existing.length}, Needs City Update: ${needsCityUpdate}, Needs Date Update: ${needsDateUpdate}`);
+      await storage.clearExamples();
+      console.log("[SEED] Storage cleared. Injecting 50 examples with new cities...");
+
+      for (const example of massiveSeeds) {
+        await storage.createExample(example);
+      }
+      console.log("[SEED] Done!");
     }
-    console.log("[SEED] Done!");
+  } catch (err) {
+    console.error("[SEED] Failed to sync database (continuing anyway):", err);
   }
 
   return httpServer;
