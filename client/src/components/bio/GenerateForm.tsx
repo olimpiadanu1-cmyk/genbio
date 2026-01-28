@@ -28,6 +28,7 @@ export function GenerateForm() {
       job: "",
       age: 25,
       hasCriminalRecord: false,
+      pov: "third",
     },
   });
 
@@ -70,7 +71,7 @@ export function GenerateForm() {
                   <FormItem>
                     <FormLabel>Имя персонажа</FormLabel>
                     <FormControl>
-                      <Input placeholder="Например, Тони Старк" {...field} />
+                      <Input placeholder="Например, Фернандо Намиказзе" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -83,10 +84,10 @@ export function GenerateForm() {
                   <FormItem>
                     <FormLabel>Возраст ({field.value})</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        min={18} 
-                        max={90} 
+                      <Input
+                        type="number"
+                        min={18}
+                        max={90}
                         {...field}
                         onChange={e => field.onChange(parseInt(e.target.value))}
                       />
@@ -104,7 +105,7 @@ export function GenerateForm() {
                 <FormItem>
                   <FormLabel>Город/Сервер</FormLabel>
                   <FormControl>
-                    <Input placeholder="Например, Арзамас" {...field} />
+                    <Input placeholder="Например, Москва" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -118,7 +119,7 @@ export function GenerateForm() {
                 <FormItem>
                   <FormLabel>Профессия</FormLabel>
                   <FormControl>
-                    <Input placeholder="Например, Механик" {...field} />
+                    <Input placeholder="Например, Водолаз" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -149,6 +150,43 @@ export function GenerateForm() {
 
             <FormField
               control={form.control}
+              name="pov"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm bg-background">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Повествование</FormLabel>
+                    <FormDescription>
+                      {field.value === "first" ? "От 1-го лица (Я родился...)" : "От 3-го лица (Он родился...)"}
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <div className="flex bg-muted p-1 rounded-md">
+                      <Button
+                        type="button"
+                        variant={field.value === "first" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => field.onChange("first")}
+                        className="px-3"
+                      >
+                        Я
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={field.value === "third" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => field.onChange("third")}
+                        className="px-3"
+                      >
+                        Он
+                      </Button>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="hasCriminalRecord"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm bg-background">
@@ -168,9 +206,9 @@ export function GenerateForm() {
               )}
             />
 
-            <Button 
-              type="submit" 
-              className="w-full h-12 bg-gradient-to-r from-primary to-blue-600 hover:to-blue-700 shadow-lg shadow-primary/25"
+            <Button
+              type="submit"
+              className="w-full min-h-[3rem] h-auto py-3 px-6 bg-gradient-to-r from-primary to-blue-600 hover:to-blue-700 shadow-lg shadow-primary/25 whitespace-normal lg:whitespace-nowrap"
               disabled={generateMutation.isPending}
             >
               {generateMutation.isPending ? (
@@ -191,7 +229,7 @@ export function GenerateForm() {
 
       <div className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight">Результат</h2>
-        <Card className="h-[600px] flex flex-col bg-slate-50 border-2 border-slate-100 overflow-hidden relative">
+        <Card className="h-[600px] flex flex-col bg-secondary/10 border-2 border-border overflow-hidden relative">
           <div className="flex-1 flex flex-col overflow-hidden">
             {generatedContent ? (
               <div className="flex-1 flex flex-col min-h-0">
@@ -206,14 +244,14 @@ export function GenerateForm() {
                     {copied ? "Скопировано" : "Копировать"}
                   </Button>
                 </div>
-                <CardContent className="flex-1 p-6 overflow-y-auto font-serif text-slate-800 leading-relaxed whitespace-pre-wrap">
+                <CardContent className="flex-1 p-6 overflow-y-auto font-serif text-foreground leading-relaxed whitespace-pre-wrap">
                   {generatedContent}
                 </CardContent>
               </div>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center">
-                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
-                  <Sparkles className="w-8 h-8 text-slate-300" />
+                <div className="w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center mb-4">
+                  <Sparkles className="w-8 h-8 text-muted-foreground/50" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">Готов к созданию</h3>
                 <p className="max-w-xs text-sm">Заполните форму слева, чтобы создать уникальную RP биографию для вашего персонажа.</p>

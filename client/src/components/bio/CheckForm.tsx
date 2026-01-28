@@ -42,10 +42,10 @@ export function CheckForm() {
                 <FormLabel className="text-base font-semibold">Вставьте биографию</FormLabel>
                 <FormControl>
                   <div className="relative group">
-                    <Textarea 
-                      placeholder="Имя Фамилия: Иван Иванов..." 
-                      className="min-h-[300px] font-mono text-sm leading-relaxed resize-none bg-background focus:ring-2 focus:ring-primary/20 transition-all border-muted-foreground/20" 
-                      {...field} 
+                    <Textarea
+                      placeholder="Имя Фамилия: Иван Иванов..."
+                      className="min-h-[300px] font-mono text-sm leading-relaxed resize-none bg-background focus:ring-2 focus:ring-primary/20 transition-all border-muted-foreground/20"
+                      {...field}
                     />
                     <div className="absolute bottom-3 right-3 text-xs text-muted-foreground pointer-events-none bg-background/80 px-2 py-1 rounded">
                       {field.value.length} симв.
@@ -56,10 +56,10 @@ export function CheckForm() {
               </FormItem>
             )}
           />
-          
-          <Button 
-            type="submit" 
-            className="w-full h-12 text-base font-medium shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all"
+
+          <Button
+            type="submit"
+            className="w-full min-h-[3rem] h-auto py-3 px-6 text-base font-medium shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all whitespace-normal lg:whitespace-nowrap"
             disabled={checkMutation.isPending}
           >
             {checkMutation.isPending ? (
@@ -85,7 +85,7 @@ export function CheckForm() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className={`border-l-4 ${result.valid ? 'border-l-green-500 bg-green-50/50' : 'border-l-destructive bg-red-50/50'}`}>
+            <Card className={`border-l-4 ${result.valid ? 'border-l-green-500 bg-green-500/5' : 'border-l-destructive bg-destructive/5'}`}>
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4">
                   {result.valid ? (
@@ -97,18 +97,18 @@ export function CheckForm() {
                       <XCircle className="w-6 h-6" />
                     </div>
                   )}
-                  
+
                   <div className="flex-1 space-y-2">
-                    <h3 className={`font-bold text-lg ${result.valid ? 'text-green-800' : 'text-destructive'}`}>
+                    <h3 className={`font-bold text-lg ${result.valid ? 'text-green-600 dark:text-green-400' : 'text-destructive dark:text-red-400'}`}>
                       {result.valid ? "Биография одобрена" : "Требуются исправления"}
                     </h3>
-                    
+
                     <p className="text-sm text-foreground/80">
                       {result.feedback || (result.valid ? "Ваша биография соответствует требованиям формата и длины." : "Пожалуйста, исправьте ошибки ниже перед подачей.")}
                     </p>
 
                     {!result.valid && result.errors.length > 0 && (
-                      <div className="mt-4 p-4 rounded-lg bg-white/50 border border-red-100">
+                      <div className="mt-4 p-4 rounded-lg bg-secondary/20 border border-destructive/20">
                         <ul className="space-y-2">
                           {result.errors.map((err, i) => (
                             <li key={i} className="flex items-start gap-2 text-sm text-red-700">

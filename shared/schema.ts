@@ -21,6 +21,7 @@ export const generateBioSchema = z.object({
   job: z.string().min(1, "Работа обязательна"),
   age: z.number().min(1, "Возраст должен быть указан"),
   hasCriminalRecord: z.boolean(),
+  pov: z.enum(["first", "third"]).default("third"),
 });
 
 export type GenerateBioRequest = z.infer<typeof generateBioSchema>;

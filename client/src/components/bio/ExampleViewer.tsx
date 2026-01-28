@@ -15,12 +15,12 @@ export function ExampleViewer() {
         <p className="text-muted-foreground max-w-xl mx-auto">
           Посмотрите, как структурированы одобренные биографии. Эти примеры соответствуют всем правилам сервера и правилам оформления.
         </p>
-        
-        <Button 
-          size="lg" 
-          onClick={() => refetch()} 
+
+        <Button
+          size="lg"
+          onClick={() => refetch()}
           disabled={isFetching}
-          className="min-w-[200px]"
+          className="min-w-[200px] h-auto py-3 px-6 whitespace-normal"
         >
           {isFetching ? (
             <RefreshCcw className="mr-2 h-4 w-4 animate-spin" />
@@ -34,7 +34,7 @@ export function ExampleViewer() {
       <div className="min-h-[400px] flex items-center justify-center">
         <AnimatePresence mode="wait">
           {isFetching ? (
-            <motion.div 
+            <motion.div
               key="loading"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -52,17 +52,17 @@ export function ExampleViewer() {
               transition={{ duration: 0.3 }}
               className="w-full text-left"
             >
-              <Card className="border-t-4 border-t-primary shadow-xl bg-white/80 backdrop-blur">
+              <Card className="border-t-4 border-t-primary shadow-xl bg-card/80 backdrop-blur">
                 <CardContent className="p-8 md:p-12">
                   <div className="flex justify-center mb-6">
                     <Quote className="w-12 h-12 text-primary/10 rotate-180" />
                   </div>
-                  
-                  <h3 className="text-2xl font-bold text-center mb-8 text-slate-800 font-serif">
+
+                  <h3 className="text-2xl font-bold text-center mb-8 text-foreground font-serif">
                     {data.title}
                   </h3>
-                  
-                  <div className="prose prose-slate max-w-none font-serif leading-relaxed text-slate-600">
+
+                  <div className="prose prose-slate dark:prose-invert max-w-none font-serif leading-relaxed text-muted-foreground">
                     {data.content.split('\n').map((paragraph, i) => (
                       <p key={i} className="mb-4 last:mb-0">{paragraph}</p>
                     ))}
@@ -71,9 +71,9 @@ export function ExampleViewer() {
               </Card>
             </motion.div>
           ) : isError ? (
-            <div className="text-destructive">Failed to load example. Please try again.</div>
+            <div className="text-destructive">Не удалось загрузить пример. Пожалуйста, попробуйте еще раз.</div>
           ) : (
-            <div className="text-muted-foreground italic">Click the button above to view an example</div>
+            <div className="text-muted-foreground italic">Нажмите кнопку выше, чтобы просмотреть пример</div>
           )}
         </AnimatePresence>
       </div>

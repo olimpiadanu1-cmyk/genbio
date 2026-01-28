@@ -5,7 +5,7 @@ export function useRandomExample() {
   return useQuery({
     queryKey: [api.examples.random.path],
     queryFn: async () => {
-      const res = await fetch(api.examples.random.path);
+      const res = await fetch(`${api.examples.random.path}?t=${Date.now()}`);
       if (!res.ok) throw new Error("Failed to fetch example");
       return api.examples.random.responses[200].parse(await res.json());
     },

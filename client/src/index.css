@@ -11,46 +11,89 @@
   /* Clean, professional palette - White & Blue/Gray */
   --background: 0 0% 100%;
   --foreground: 222 47% 11%;
-  
+
   --card: 0 0% 100%;
   --card-foreground: 222 47% 11%;
-  
+
   --popover: 0 0% 100%;
   --popover-foreground: 222 47% 11%;
-  
-  --primary: 221 83% 53%; /* Bright professional blue */
+
+  --primary: 221 83% 53%;
+  /* Bright professional blue */
   --primary-foreground: 210 40% 98%;
-  
+
   --secondary: 210 40% 96.1%;
   --secondary-foreground: 222.2 47.4% 11.2%;
-  
+
   --muted: 210 40% 96.1%;
   --muted-foreground: 215.4 16.3% 46.9%;
-  
+
   --accent: 210 40% 96.1%;
   --accent-foreground: 222.2 47.4% 11.2%;
-  
+
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
 
   --border: 214.3 31.8% 91.4%;
   --input: 214.3 31.8% 91.4%;
   --ring: 221.2 83.2% 53.3%;
-  
+
   --radius: 0.75rem;
+}
+
+.dark {
+  --background: 222 47% 4%;
+  --foreground: 210 40% 98%;
+
+  --card: 222 47% 6%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 222 47% 5%;
+  --popover-foreground: 210 40% 98%;
+
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 11%;
+
+  --secondary: 217 33% 15%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217 33% 15%;
+  --muted-foreground: 215 20% 65%;
+
+  --accent: 217 33% 18%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217 33% 18%;
+  --input: 217 33% 18%;
+  --ring: 224 76% 48%;
 }
 
 @layer base {
   body {
     @apply bg-background text-foreground antialiased font-sans selection:bg-primary/10 selection:text-primary;
-    background-image: 
-      radial-gradient(at 0% 0%, hsla(221, 83%, 53%, 0.03) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(210, 40%, 96%, 0.5) 0px, transparent 50%);
+    background-image:
+      radial-gradient(at 0% 0%, hsla(221, 83%, 53%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(217, 91%, 60%, 0.05) 0px, transparent 50%);
     background-attachment: fixed;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight font-semibold text-slate-900;
+
+  .dark body {
+    background-image:
+      radial-gradient(at 0% 0%, hsla(217, 91%, 60%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(222, 47%, 11%, 0.4) 0px, transparent 50%);
+    background-color: #030712;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply tracking-tight font-semibold text-foreground;
   }
 }
 
@@ -58,18 +101,18 @@
   .text-balance {
     text-wrap: balance;
   }
-  
+
   .glass-card {
     @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-xl shadow-black/5;
   }
-  
-  .animate-in {
-    animation: animateIn 0.5s ease-out forwards;
+
+  .fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
     opacity: 0;
     transform: translateY(10px);
   }
-  
-  @keyframes animateIn {
+
+  @keyframes fadeInUp {
     to {
       opacity: 1;
       transform: translateY(0);

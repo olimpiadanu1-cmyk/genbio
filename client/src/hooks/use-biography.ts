@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { api, type GenerateBioRequest, type CheckBioRequest } from "@shared/routes";
+import { api } from "@shared/routes";
+import { type GenerateBioRequest, type CheckBioRequest } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 
 export function useCheckBiography() {
@@ -14,18 +15,21 @@ export function useCheckBiography() {
       });
 
       if (!res.ok) {
-        if (res.status === 400) {
+        let errorMessage = "Не удалось проверить биографию";
+        try {
           const error = await res.json();
-          throw new Error(error.message || "Validation failed");
+          errorMessage = error.message || errorMessage;
+        } catch (e) {
+          // ignore parsing error
         }
-        throw new Error("Failed to check biography");
+        throw new Error(errorMessage);
       }
 
       return api.biography.check.responses[200].parse(await res.json());
     },
     onError: (error) => {
       toast({
-        title: "Error checking biography",
+        title: "Ошибка проверки",
         description: error.message,
         variant: "destructive",
       });
@@ -45,18 +49,21 @@ export function useGenerateBiography() {
       });
 
       if (!res.ok) {
-        if (res.status === 400) {
+        let errorMessage = "Не удалось создать биографию";
+        try {
           const error = await res.json();
-          throw new Error(error.message || "Invalid parameters");
+          errorMessage = error.message || errorMessage;
+        } catch (e) {
+          // ignore parsing error
         }
-        throw new Error("Failed to generate biography");
+        throw new Error(errorMessage);
       }
 
       return api.biography.generate.responses[200].parse(await res.json());
     },
     onError: (error) => {
       toast({
-        title: "Generation failed",
+        title: "Ошибка генерации",
         description: error.message,
         variant: "destructive",
       });

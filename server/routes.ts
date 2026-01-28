@@ -3,18 +3,23 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
-import OpenAI from "openai";
 import { checkBioSchema, generateBioSchema } from "@shared/schema";
+import { massiveSeeds } from "./massiveSeeds";
+import { localCheckBio, localGenerateBio } from "./localBio";
+import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+const openai = process.env.AI_INTEGRATIONS_OPENAI_API_KEY
+  ? new OpenAI({
+    apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+    baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+  })
+  : null;
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  console.log("!!! SERVER READY - VERSION 2026 DATES !!!");
 
   // --- Examples API ---
 
@@ -37,45 +42,59 @@ export async function registerRoutes(
     try {
       const { content } = checkBioSchema.parse(req.body);
 
+      // --- Step 1: Strict Local Validation ---
+      const localResult = localCheckBio(content);
+      if (!localResult.valid) {
+        return res.json(localResult);
+      }
+
+      // --- Step 2: AI Quality Check (only if local passes) ---
+      if (!openai) {
+        return res.json(localResult);
+      }
+
       const prompt = `
         Ты — Проверяльщик RP биографий.
-        Проанализируй следующую биографию на соответствие этим СТРОГИМ правилам:
-        1. Заголовок должен быть точно: "RolePlay биография гражданина [Имя] [Фамилия]"
-        2. Должны присутствовать поля: Имя Фамилия, Пол, Национальность, Возраст, Дата и место рождения, Семья, Место текущего проживания, Описание внешности, Особенности характера.
-        3. Требуются подробные разделы: Детство, Юность и взрослая жизнь, Настоящее время, Хобби.
-        4. Дата рождения должна быть в формате ДД.ММ.ГГГГ.
-        5. Возраст должен соответствовать году рождения.
-        6. Никаких сверхспособностей.
-        7. Никаких имен знаменитостей или администраторов.
-        8. Написано от первого лица.
-        9. Никакой религиозной или националистической пропаганды.
+        Биография УЖЕ прошла техническую проверку формата. Теперь проверь КАЧЕСТВО, РЕАЛИЗМ и ЛОГИКУ.
         
-        Биография для проверки:
+        СТРОГИЕ ПРАВИЛА:
+        1. Никаких сверхспособностей.
+        2. Никаких имен знаменитостей или администраторов.
+        3. Никакой религиозной или националистической пропаганды.
+        4. Логическая связь между разделами.
+        
+        Биография:
         ${content}
 
         Верни ответ в формате JSON:
         {
-          "valid": boolean,
-          "errors": ["ошибка 1", "ошибка 2"],
-          "feedback": "Общий отзыв..."
+          "valid": boolean (false если есть нарушения реализма/логики),
+          "errors": ["описание проблемы 1"],
+          "feedback": "Общий отзыв о качестве текста..."
         }
       `;
 
       const response = await openai.chat.completions.create({
-        model: "gpt-5.1",
+        model: "gpt-4o",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
       });
 
-      const result = JSON.parse(response.choices[0].message.content || "{}");
-      res.json(result);
+      const aiResult = JSON.parse(response.choices[0].message.content || "{}");
+      res.json(aiResult);
 
     } catch (err) {
       if (err instanceof z.ZodError) {
         res.status(400).json({ message: "Некорректный ввод", field: err.errors[0].path[0] });
       } else {
         console.error("Check Error:", err);
-        res.status(500).json({ message: "Не удалось проверить биографию" });
+        // Robust fallback to local check if OpenAI fails
+        const { content } = req.body;
+        const result = localCheckBio(content || "");
+        res.json({
+          ...result,
+          feedback: result.feedback + " (Внимание: Использована локальная проверка из-за ошибки AI)"
+        });
       }
     }
   });
@@ -84,50 +103,8 @@ export async function registerRoutes(
     try {
       const params = generateBioSchema.parse(req.body);
 
-      const prompt = `
-        Напиши RolePlay биографию для персонажа сервера GTA V RP.
-        Используй эти детали:
-        - Никнейм: ${params.nickname}
-        - Сервер/Город: ${params.server}
-        - Количество членов семьи: ${params.familyMembers}
-        - Работа: ${params.job}
-        - Возраст: ${params.age}
-        - Судимость: ${params.hasCriminalRecord ? "Да" : "Нет"}
-
-        Обязательный формат:
-        RolePlay биография гражданина ${params.nickname.replace("_", " ")}
-
-        Имя Фамилия: ${params.nickname.replace("_", " ")}
-        Пол: Мужской
-        Национальность: Русский
-        Возраст: ${params.age}
-        Дата и место рождения: [Рассчитай исходя из возраста], г. ${params.server}
-        Семья: [Опиши, основываясь на количестве членов семьи]
-        Место текущего проживания: г. ${params.server}
-        Описание внешности: [Креативное описание]
-        Особенности характера: [Креативное описание]
-
-        Детство:
-        [Напиши 1-2 абзаца]
-
-        Юность и взрослая жизнь:
-        [Напиши 1-2 абзаца, упомяни работу и статус судимости]
-
-        Настоящее время:
-        [Напиши 1 абзац]
-
-        Хобби:
-        [Список хобби]
-
-        Текст должен быть на русском языке. Будь креативным, но реалистичным.
-      `;
-
-      const response = await openai.chat.completions.create({
-        model: "gpt-5.1",
-        messages: [{ role: "user", content: prompt }],
-      });
-
-      res.json({ content: response.choices[0].message.content || "" });
+      const content = localGenerateBio(params);
+      res.json({ content });
 
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -139,15 +116,25 @@ export async function registerRoutes(
     }
   });
 
-  // Seed data if empty
+  // Seed data logic
   const existing = await storage.getExamples();
-  if (existing.length === 0) {
-    const seedBio = "RolePlay биография гражданина Иван Иванов\n\nИмя Фамилия: Иван Иванов\nПол: Мужской\nНациональность: Русский\nВозраст: 25\nДата и место рождения: 01.01.1999, г. Арзамас\nСемья: Отец, Мать, Сестра\nМесто текущего проживания: г. Арзамас, ул. Ленина, д. 5\nОписание внешности: Рост 180 см, спортивное телосложение, голубые глаза, русые волосы.\nОсобенности характера: Добрый, отзывчивый, целеустремленный.\n\nДетство:\nИван родился в обычной семье в городе Арзамас. Его отец работал на заводе, а мать была учительницей. С детства Иван увлекался спортом и часто играл в футбол во дворе. В школе он учился хорошо, особенно ему нравилась история.\n\nЮность и взрослая жизнь:\nПосле окончания школы Иван поступил в университет на юридический факультет. Учеба давалась ему легко. В свободное время он подрабатывал курьером, чтобы помогать родителям. После получения диплома он устроился работать в местную администрацию.\n\nНастоящее время:\nСейчас Иван работает юристом в крупной компании. Он купил свою квартиру и машину. В выходные он любит выезжать на природу с друзьями.\n\nХобби:\nФутбол, чтение книг, рыбалка.";
+  const hasOldExample = existing.some(e =>
+    e.title === "Иван Иванов - Пример" ||
+    e.title === "Иван Иванов - Обычный рабочий"
+  );
 
-    await storage.createExample({
-      title: "Иван Иванов - Пример",
-      content: seedBio
-    });
+  const needsCityUpdate = existing.length > 0 && !existing.some(e => e.content.includes("Екатеринбург"));
+  const needsDateUpdate = existing.length > 0 && !existing.some(e => e.content.includes(".2026"));
+
+  if (existing.length < 50 || hasOldExample || needsCityUpdate || needsDateUpdate) {
+    console.log(`[SEED] Syncing database. Current: ${existing.length}, Needs City Update: ${needsCityUpdate}, Needs Date Update: ${needsDateUpdate}`);
+    await storage.clearExamples();
+    console.log("[SEED] Storage cleared. Injecting 50 examples with new cities...");
+
+    for (const example of massiveSeeds) {
+      await storage.createExample(example);
+    }
+    console.log("[SEED] Done!");
   }
 
   return httpServer;
