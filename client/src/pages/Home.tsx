@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Header } from "@/components/layout/Header";
+import { MobileOverlay } from "@/components/layout/MobileOverlay";
 import { CheckForm } from "@/components/bio/CheckForm";
 import { GenerateForm } from "@/components/bio/GenerateForm";
 import { ExampleViewer } from "@/components/bio/ExampleViewer";
@@ -14,6 +15,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background/50 flex flex-col font-sans">
+      <MobileOverlay />
       <Header />
 
       <main className="flex-1 container mx-auto px-4 py-8 md:py-12 max-w-6xl">
@@ -45,27 +47,27 @@ export default function Home() {
               className="w-full"
             >
               <div className="flex justify-center mb-8">
-                <TabsList className="grid w-full max-w-md grid-cols-3 h-12 p-1 bg-muted backdrop-blur rounded-xl border border-border">
+                <TabsList className="flex w-full max-w-md h-14 sm:h-12 p-1 bg-muted/50 backdrop-blur-md rounded-xl border border-border/50 shadow-inner overflow-hidden">
                   <TabsTrigger
                     value="check"
-                    className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary transition-all"
+                    className="flex-1 rounded-lg px-2 text-xs sm:text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary transition-all flex items-center justify-center gap-1.5 sm:gap-2"
                   >
-                    <CheckCircle2 className="w-4 h-4 mr-2" />
-                    Проверка
+                    <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 hidden sm:block" />
+                    <span className="whitespace-nowrap">Проверка</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="generate"
-                    className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary transition-all"
+                    className="flex-1 rounded-lg px-2 text-xs sm:text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary transition-all flex items-center justify-center gap-1.5 sm:gap-2"
                   >
-                    <PenTool className="w-4 h-4 mr-2" />
-                    Генерация
+                    <PenTool className="w-3.5 h-3.5 sm:w-4 sm:h-4 hidden sm:block" />
+                    <span className="whitespace-nowrap">Генерация</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="examples"
-                    className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary transition-all"
+                    className="flex-1 rounded-lg px-2 text-xs sm:text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary transition-all flex items-center justify-center gap-1.5 sm:gap-2"
                   >
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    Примеры
+                    <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 hidden sm:block" />
+                    <span className="whitespace-nowrap">Примеры</span>
                   </TabsTrigger>
                 </TabsList>
               </div>

@@ -19,7 +19,7 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  console.log("!!! SERVER READY - VERSION 2026 DATES !!!");
+  console.log("!!! SERVER READY - VERSION 1st PERSON SEEDS !!!");
 
   // --- Examples API ---
 
