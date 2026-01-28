@@ -15,18 +15,18 @@ export type InsertExample = z.infer<typeof insertExampleSchema>;
 
 // Types for Biography Generation
 export const generateBioSchema = z.object({
-  nickname: z.string().min(1, "Nickname is required"),
-  server: z.string().min(1, "Server/City is required"),
-  familyMembers: z.number().min(0, "Family members must be 0 or more"),
-  job: z.string().min(1, "Job is required"),
-  age: z.number().min(1, "Age must be valid"),
+  nickname: z.string().min(1, "Никнейм обязателен"),
+  server: z.string().min(1, "Сервер/Город обязателен"),
+  familyMembers: z.number().min(0, "Количество членов семьи должно быть 0 или больше"),
+  job: z.string().min(1, "Работа обязательна"),
+  age: z.number().min(1, "Возраст должен быть указан"),
   hasCriminalRecord: z.boolean(),
 });
 
 export type GenerateBioRequest = z.infer<typeof generateBioSchema>;
 
 export const checkBioSchema = z.object({
-  content: z.string().min(50, "Biography is too short"),
+  content: z.string().min(50, "Биография слишком короткая"),
 });
 
 export type CheckBioRequest = z.infer<typeof checkBioSchema>;
