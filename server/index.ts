@@ -75,8 +75,11 @@ export async function createApp() {
     return res.status(status).json({ message });
   });
 
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production" && !process.env.VERCEL) {
     serveStatic(app);
+  } else if (process.env.NODE_ENV === "production" && process.env.VERCEL) {
+    // On Vercel, static files are served by Vercel itself via rewrites in vercel.json
+    console.log("[Express] Running on Vercel, skipping serveStatic");
   } else {
     const { setupVite } = await import("./vite");
     await setupVite(httpServer, app);
