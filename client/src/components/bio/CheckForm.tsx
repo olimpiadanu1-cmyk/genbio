@@ -39,16 +39,16 @@ export function CheckForm() {
             name="content"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-base font-semibold">Paste Biography</FormLabel>
+                <FormLabel className="text-base font-semibold">Вставьте биографию</FormLabel>
                 <FormControl>
                   <div className="relative group">
                     <Textarea 
-                      placeholder="Name: John Doe..." 
+                      placeholder="Имя Фамилия: Иван Иванов..." 
                       className="min-h-[300px] font-mono text-sm leading-relaxed resize-none bg-background focus:ring-2 focus:ring-primary/20 transition-all border-muted-foreground/20" 
                       {...field} 
                     />
                     <div className="absolute bottom-3 right-3 text-xs text-muted-foreground pointer-events-none bg-background/80 px-2 py-1 rounded">
-                      {field.value.length} chars
+                      {field.value.length} симв.
                     </div>
                   </div>
                 </FormControl>
@@ -65,11 +65,11 @@ export function CheckForm() {
             {checkMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Validating Format...
+                Проверка формата...
               </>
             ) : (
               <>
-                Check Biography
+                Проверить биографию
                 <ArrowRight className="ml-2 h-5 w-5" />
               </>
             )}

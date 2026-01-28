@@ -36,8 +36,8 @@ export function GenerateForm() {
       onSuccess: (res) => {
         setGeneratedContent(res.content);
         toast({
-          title: "Biography Generated",
-          description: "You can now copy and edit your new biography.",
+          title: "Биография создана",
+          description: "Теперь вы можете скопировать и отредактировать вашу новую биографию.",
         });
       },
     });
@@ -48,7 +48,7 @@ export function GenerateForm() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     toast({
-      title: "Copied to clipboard",
+      title: "Скопировано в буфер обмена",
     });
   };
 

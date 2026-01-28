@@ -9,8 +9,8 @@ export function Header() {
             <FileText className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="font-bold text-lg tracking-tight">BioValidator</h1>
-            <p className="text-xs text-muted-foreground hidden sm:block">RP Biography Assistant</p>
+            <h1 className="font-bold text-lg tracking-tight">БиоВалидатор</h1>
+            <p className="text-xs text-muted-foreground hidden sm:block">Помощник по RP биографиям</p>
           </div>
         </div>
 
