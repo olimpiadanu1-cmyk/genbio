@@ -21,6 +21,10 @@ export async function registerRoutes(
 ): Promise<Server> {
   console.log("!!! SERVER READY - VERSION 1st PERSON SEEDS !!!");
 
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok", time: new Date().toISOString(), vercel: !!process.env.VERCEL });
+  });
+
   // --- Examples API ---
 
   app.get(api.examples.random.path, async (req, res) => {

@@ -33,33 +33,10 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      log(logLine);
-    }
-  });
-
-  next();
-});
-
+let initialized = false;
 export async function createApp() {
+  if (initialized) return app;
+
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
@@ -78,30 +55,35 @@ export async function createApp() {
   if (process.env.NODE_ENV === "production" && !process.env.VERCEL) {
     serveStatic(app);
   } else if (process.env.NODE_ENV === "production" && process.env.VERCEL) {
-    // On Vercel, static files are served by Vercel itself via rewrites in vercel.json
-    console.log("[Express] Running on Vercel, skipping serveStatic");
+    console.log("[Express] Running on Vercel, static files handled via vercel.json");
   } else {
     const { setupVite } = await import("./vite");
     await setupVite(httpServer, app);
   }
 
+  initialized = true;
   return app;
 }
 
 // Only start the server if we're running this file directly (not in Vercel/tests)
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   (async () => {
-    await createApp();
-    const port = parseInt(process.env.PORT || "5000", 10);
-    httpServer.listen(
-      {
-        port,
-        host: "0.0.0.0",
-      },
-      () => {
-        log(`serving on port ${port}`);
-      },
-    );
+    try {
+      await createApp();
+      const port = parseInt(process.env.PORT || "5000", 10);
+      httpServer.listen(
+        {
+          port,
+          host: "0.0.0.0",
+        },
+        () => {
+          log(`serving on port ${port}`);
+        },
+      );
+    } catch (err) {
+      console.error("Failed to start server:", err);
+      process.exit(1);
+    }
   })();
 }
 
