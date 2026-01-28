@@ -38,26 +38,26 @@ export async function registerRoutes(
       const { content } = checkBioSchema.parse(req.body);
 
       const prompt = `
-        You are a RolePlay Biography Checker.
-        Analyze the following biography against these STRICT rules:
-        1. Title must be exactly: "RolePlay биография гражданина [Firstname] [Lastname]"
-        2. Must contain fields: Name, Gender, Nationality, Age, Date/Place of Birth, Family, Residence, Appearance, Character.
-        3. Detailed sections required: Childhood, Youth & Adult Life, Present Time, Hobby.
-        4. Date of birth must be DD.MM.YYYY format.
-        5. Age must match birth year.
-        6. No supernatural abilities.
-        7. No famous people or admin names.
-        8. Written in first person.
-        9. No religious/nationalist propaganda.
+        Ты — Проверяльщик RP биографий.
+        Проанализируй следующую биографию на соответствие этим СТРОГИМ правилам:
+        1. Заголовок должен быть точно: "RolePlay биография гражданина [Имя] [Фамилия]"
+        2. Должны присутствовать поля: Имя Фамилия, Пол, Национальность, Возраст, Дата и место рождения, Семья, Место текущего проживания, Описание внешности, Особенности характера.
+        3. Требуются подробные разделы: Детство, Юность и взрослая жизнь, Настоящее время, Хобби.
+        4. Дата рождения должна быть в формате ДД.ММ.ГГГГ.
+        5. Возраст должен соответствовать году рождения.
+        6. Никаких сверхспособностей.
+        7. Никаких имен знаменитостей или администраторов.
+        8. Написано от первого лица.
+        9. Никакой религиозной или националистической пропаганды.
         
-        Biography to check:
+        Биография для проверки:
         ${content}
 
-        Return JSON format:
+        Верни ответ в формате JSON:
         {
           "valid": boolean,
-          "errors": ["error 1", "error 2"],
-          "feedback": "General feedback..."
+          "errors": ["ошибка 1", "ошибка 2"],
+          "feedback": "Общий отзыв..."
         }
       `;
 
@@ -72,10 +72,10 @@ export async function registerRoutes(
 
     } catch (err) {
       if (err instanceof z.ZodError) {
-        res.status(400).json({ message: "Invalid input", field: err.errors[0].path[0] });
+        res.status(400).json({ message: "Некорректный ввод", field: err.errors[0].path[0] });
       } else {
         console.error("Check Error:", err);
-        res.status(500).json({ message: "Failed to check biography" });
+        res.status(500).json({ message: "Не удалось проверить биографию" });
       }
     }
   });
@@ -85,42 +85,59 @@ export async function registerRoutes(
       const params = generateBioSchema.parse(req.body);
 
       const prompt = `
-        Write a RolePlay Biography for a GTA V RP server character.
-        Use these details:
-        - Nickname: ${params.nickname}
-        - Server/City: ${params.server}
-        - Family Members: ${params.familyMembers}
-        - Job: ${params.job}
-        - Age: ${params.age}
-        - Criminal Record: ${params.hasCriminalRecord ? "Yes" : "No"}
+        Напиши RolePlay биографию для персонажа сервера GTA V RP.
+        Используй эти детали:
+        - Никнейм: ${params.nickname}
+        - Сервер/Город: ${params.server}
+        - Количество членов семьи: ${params.familyMembers}
+        - Работа: ${params.job}
+        - Возраст: ${params.age}
+        - Судимость: ${params.hasCriminalRecord ? "Да" : "Нет"}
 
-        Strict Format Required:
+        Обязательный формат:
         RolePlay биография гражданина ${params.nickname.replace("_", " ")}
 
         Имя Фамилия: ${params.nickname.replace("_", " ")}
         Пол: Мужской
         Национальность: Русский
         Возраст: ${params.age}
-        Дата и место рождения: [Calculate from age], г. ${params.server}
-        Семья: [Describe based on members count]
+        Дата и место рождения: [Рассчитай исходя из возраста], г. ${params.server}
+        Семья: [Опиши, основываясь на количестве членов семьи]
         Место текущего проживания: г. ${params.server}
-        Описание внешности: [Creative description]
-        Особенности характера: [Creative description]
+        Описание внешности: [Креативное описание]
+        Особенности характера: [Креативное описание]
 
         Детство:
-        [Write 1-2 paragraphs]
+        [Напиши 1-2 абзаца]
 
         Юность и взрослая жизнь:
-        [Write 1-2 paragraphs, mention job and criminal status]
+        [Напиши 1-2 абзаца, упомяни работу и статус судимости]
 
         Настоящее время:
-        [Write 1 paragraph]
+        [Напиши 1 абзац]
 
         Хобби:
-        [List hobbies]
+        [Список хобби]
 
-        The text must be in Russian. Be creative but realistic.
+        Текст должен быть на русском языке. Будь креативным, но реалистичным.
       `;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-5.1",
+        messages: [{ role: "user", content: prompt }],
+      });
+
+      res.json({ content: response.choices[0].message.content || "" });
+
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        res.status(400).json({ message: "Некорректный ввод", field: err.errors[0].path[0] });
+      } else {
+        console.error("Generate Error:", err);
+        res.status(500).json({ message: "Не удалось создать биографию" });
+      }
+    }
+  });
 
       const response = await openai.chat.completions.create({
         model: "gpt-5.1",
