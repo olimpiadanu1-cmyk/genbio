@@ -1,4 +1,4 @@
-import { examples, type Example, type InsertExample } from "@shared/schema";
+import { examples, type Example, type InsertExample } from "../shared/schema";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
 
