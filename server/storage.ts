@@ -52,7 +52,7 @@ export class MemStorage implements IStorage {
   async getExamples(): Promise<Example[]> {
     const list = Array.from(this.examples.values());
     if (list.length === 0) {
-      const { massiveSeeds } = await import("./massiveSeeds");
+      const { massiveSeeds } = await import("./massiveSeeds.js");
       return massiveSeeds.map((s, i) => ({ ...s, id: 999 + i } as Example));
     }
     return list;
@@ -63,7 +63,7 @@ export class MemStorage implements IStorage {
 
     // If memory is empty (common in Vercel cold start), try to return a static seed if possible
     if (list.length === 0) {
-      const { massiveSeeds } = await import("./massiveSeeds");
+      const { massiveSeeds } = await import("./massiveSeeds.js");
       if (massiveSeeds && massiveSeeds.length > 0) {
         const randomIndex = Math.floor(Math.random() * massiveSeeds.length);
         console.log(`[MemStorage] Memory empty, returning static seed index: ${randomIndex}`);
