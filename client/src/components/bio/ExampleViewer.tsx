@@ -11,9 +11,9 @@ export function ExampleViewer() {
   return (
     <div className="max-w-3xl mx-auto space-y-8 text-center">
       <div className="space-y-4">
-        <h2 className="text-3xl font-bold tracking-tight">Learn from Examples</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Учитесь на примерах</h2>
         <p className="text-muted-foreground max-w-xl mx-auto">
-          See how approved biographies are structured. These examples follow all server rules and formatting guidelines.
+          Посмотрите, как структурированы одобренные биографии. Эти примеры соответствуют всем правилам сервера и правилам оформления.
         </p>
         
         <Button 
@@ -27,7 +27,7 @@ export function ExampleViewer() {
           ) : (
             <RefreshCcw className="mr-2 h-4 w-4" />
           )}
-          {data ? "Load Another" : "Show Random Example"}
+          {data ? "Загрузить другой" : "Показать случайный пример"}
         </Button>
       </div>
 

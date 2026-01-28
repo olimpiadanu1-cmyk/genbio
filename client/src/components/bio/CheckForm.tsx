@@ -100,11 +100,11 @@ export function CheckForm() {
                   
                   <div className="flex-1 space-y-2">
                     <h3 className={`font-bold text-lg ${result.valid ? 'text-green-800' : 'text-destructive'}`}>
-                      {result.valid ? "Biography Approved" : "Changes Required"}
+                      {result.valid ? "Биография одобрена" : "Требуются исправления"}
                     </h3>
                     
                     <p className="text-sm text-foreground/80">
-                      {result.feedback || (result.valid ? "Your biography follows the correct format and length requirements." : "Please fix the issues below before submitting.")}
+                      {result.feedback || (result.valid ? "Ваша биография соответствует требованиям формата и длины." : "Пожалуйста, исправьте ошибки ниже перед подачей.")}
                     </p>
 
                     {!result.valid && result.errors.length > 0 && (
