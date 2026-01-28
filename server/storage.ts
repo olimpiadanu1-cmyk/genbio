@@ -1,5 +1,5 @@
-import { examples, type Example, type InsertExample } from "../shared/schema";
-import { db } from "./db";
+import { examples, type Example, type InsertExample } from "../shared/schema.js";
+import { db } from "./db.js";
 import { eq, sql } from "drizzle-orm";
 
 export interface IStorage {

@@ -1,4 +1,4 @@
-import { createApp } from "../server/index";
+import { createApp } from "../server/index.js";
 
 let cachedApp: any = null;
 

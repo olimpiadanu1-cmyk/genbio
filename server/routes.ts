@@ -1,11 +1,11 @@
 import type { Express } from "express";
 import type { Server } from "http";
-import { storage } from "./storage";
-import { api } from "../shared/routes";
+import { storage } from "./storage.js";
+import { api } from "../shared/routes.js";
 import { z } from "zod";
-import { checkBioSchema, generateBioSchema } from "../shared/schema";
-import { massiveSeeds } from "./massiveSeeds";
-import { localCheckBio, localGenerateBio } from "./localBio";
+import { checkBioSchema, generateBioSchema } from "../shared/schema.js";
+import { massiveSeeds } from "./massiveSeeds.js";
+import { localCheckBio, localGenerateBio } from "./localBio.js";
 import OpenAI from "openai";
 
 const openai = process.env.AI_INTEGRATIONS_OPENAI_API_KEY
